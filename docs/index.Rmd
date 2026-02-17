@@ -1,51 +1,334 @@
 ---
-title: "energy"
-author: "Sarah Grace Burns"
-date: "`r Sys.Date()`"
 output: html_document
+editor_options: 
+chunk_output_type: console
 ---
+---
+Title: "Data Story 1"
+Author: "Sarah Grace Burns"
+Date: "`r Sys.Date()`"
+-----
+&nbsp;
 
-## Renewable Energy Dataset 
+# Effects of GDP on Access to Renewable Energy 
 
-```{r }
-library(readr)
-energy <- read_csv('../../data/IRENA data.csv', skip=1)
-```
+&nbsp;
 
-## Gapminder Dataset
+## Introduction
 
-```{r } 
+&nbsp;
+
+### Sustainable Development 
+Sustainable development has three major aspects: **economic development**, **broad-based social inclusion**, and **environmental sustainability**. Within these broad aspects, sustainible developmnet goal number 7 is to "ensure access to affordable, sustainable modern energy." With this and the broad aspects of sustainable development in mind, countries with a low GDP *should* be experiencing the transition to new forms of renewable, clean energy at the same rates as countries with high GDPs.  
+ 
+### Introduction of Datasets 
+We will use four datasets
+
+1. Gapminder from *Gapminder* 
+2. A Carbon Emission Dataset from *The Global Carbon Project* 
+3. A Renewable Energy Dataset from *IRINA*
+4. A Levelized Cost of Energy Dataset from *Our World in Data*
+
+#### Gapminder Dataset 
+
+[Gapminder](https://www.gapminder.org/) is a Swedish foundation that pools multiple sources of data into large,
+informative datasets. By diversely sourcing data, they are able to "fill in gaps"
+and create data sets that stretch over many years and topics. This particular Gapminder 
+dataset includes information on life expectancy, population, and GDP/capita for 
+countries between 1952 and 2007. 
+
+#### Carbon Emission Dataset 
+
+[The Global Carbon Project](https://www.globalcarbonproject.org/) (GCP) is a common source of data for the international science community. The data is primarily focused on anthropogenic climate change and is used to formulate climate policy and action across the globe. The data highlights the rising concentrations of the three greenhouse gases, carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O). The GCP was founded in 2001 and has since acted as a collaborative space to promote coordinated research and sustainability. This particular GCP dataset provides information on carbon emissions and nonrenewable energy use in different countries from 1750 to 2023.   
+
+#### Renewable Energy Dataset 
+
+[The International Renewable Energy Agency](https://www.irena.org/) (IRENA) helps countries transition from fossil fuels to renewable forms of energy. IRINA analyses and collects data on renewable energy technologies, policies, finances, and investments across the globe. This information helps IRINA advise countries and corporations in order to accelerate the transition to renewable energy worldwide. This particular dataset shows what types and how much renewable energy countries are using. The data runs from 2000 through 2024. 
+
+#### Levelized Cost of Energy Dataset
+
+The levelized cost of energy dataset is published on [Our World In Data](https://ourworldindata.org/grapher/levelized-cost-of-energy). Our World In Data publishes data on pretty much anything you can think of. Their aim is to make data available and comprehensible to everyone so we can better understand what is happening in the world, and hopefully, work to make the world a better place. This dataset, in particular, shows the average cost of energy as adjusted for inflation. 
+
+```{r, eval=TRUE, echo=FALSE, warnings=FALSE, results="hide", message=FALSE}
+# Gapminder Dataset
+library(ggplot2)
 library(gapminder)
 library(dplyr)
 data(gapminder)
-gapminder %>% head
+#gapminder %>% head
+#gapminder %>% View
+#gapminder %>% pull(year) %>% range
 ```
 
-## Carbon Emissions Dataset 
-
-```{r }
-
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide", message=FALSE}
+# Carbon Emissions Dataset 
 library(dplyr)
 library(readr)
-
-
 url <- 'https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-data.csv'
 carbon <- read_csv(url) 
-carbon %>% head
-
+#carbon %>% tail
+#carbon %>% View
+#carbon %>% pull(year) %>% range
 ```
 
-# Levelized Cost of Energy Dataset 
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide", message=FALSE}
+# Renewable Energy Dataset
+library(readr)
+energy <- read_csv('../../data/IRENA data.csv', skip=1)
+#energy %>% View
+#energy %>% head
+#energy %>% pull(`Country/area`) %>% unique()
+#energy %>% pull(Year) %>% range
+energy<- 
+energy %>% 
+rename(gwh = `Electricity statistics`) #reneame column 
+```
 
-```{r }
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide", message=FALSE}
+# Levelized Cost of Energy Dataset 
 library(readr)
 library(dplyr)
 url <- 'https://raw.githubusercontent.com/ericmkeen/sewanee_esus/master/02_energy_sector/levelized-cost-of-energy.csv'
 econ <- read_csv(url)
-econ %>% head
+#econ %>% head
+#econ %>% View
+#econ %>% pull(year) %>% range
 ```
 
-```{r }
+&nbsp;
+
+## Defining Low and High GDP Countries
+The gross domestic product (GDP) refers to the total production occurring within the geographic boundaries of a country in one year. While this is only one aspect of a country's economic development, we often use it to understand and compare the wealth of countries. Here we will use it to separate wealthy countries from poor, developing countries.  
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide"}
+#find Poorest Countries 
+low_gdp_countries <-
+carbon %>% 
+filter(year==2022,
+            !is.na(gdp)) %>% 
+arrange(gdp) %>% 
+head(20) %>% 
+pull(country)
+#low_gdp_countries %>% View
+
+carbon %>% filter(country %in% low_gdp_countries)
+```
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide"}
+#Find Richest Countries 
+high_gdp_countries <-
+carbon %>% 
+filter(year==2022,
+            !is.na(gdp)) %>% 
+arrange(gdp) %>% 
+tail(20) %>% 
+pull(country)
+
+carbon %>% filter(country %in% high_gdp_countries)
+```
+
+## Countries with the Lowest GDP 
+#### This Table shows the countries with the lowest GDP average from 1750 to 2023. 
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(knitr)
+carbon %>% 
+filter(country %in% low_gdp_countries) %>% 
+group_by(country) %>% 
+summarize(`Average GDP` = mean(gdp,na.rm=TRUE)) %>% 
+kable
+```
+## Countries with the Highest GDP 
+#### This Table shows the countries with the highest GDP average from 1750 to 2023. 
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(knitr)
+carbon %>%
+filter(country %in% high_gdp_countries) %>%  
+group_by(country) %>% 
+summarize(`Average GDP` = mean(gdp,na.rm=TRUE)) %>% 
+kable
+```
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+mr <-
+energy %>% 
+filter(Technology %in% c('Total renewable', 'Total non-renewable')) %>% 
+group_by(`Country/area`, Year) %>% 
+summarize(
+  renewables = sum(as.numeric(gwh[Technology == 'Total renewable']), na.rm=TRUE),
+  total = sum(as.numeric(gwh, na.rm=TRUE))) %>% 
+mutate(prop_renewable = renewables/total) %>% 
+mutate(gdp_cat = case_when(
+`Country/area` %in% low_gdp_countries ~ 'Poorest 20',
+`Country/area` %in% high_gdp_countries ~ 'Richest 20',
+`Country/area` == 'United States of America (the)' ~ 'Richest 20',
+.default = 'Other'
+)) %>% 
+filter( ! gdp_cat == 'Other')
+```
+
+&nbsp;
+
+#Does the GDP of a country influence what percentage of its energy sources are renewable?
+
+&nbsp;
+
+## Proportion of Renewable Energy Between Low and High-GDP Countries
+#### This graph shows the proportion of total energy consumption composed of renewable energy between low- and high-GDP countries.
+ 
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+miss <-
+mr %>% 
+group_by(gdp_cat, Year) %>% 
+summarize(avg_highlow = mean(prop_renewable, na.rm=TRUE))
+
+ggplot(miss,
+aes(x=Year, 
+y= avg_highlow,
+color=gdp_cat,
+fill=gdp_cat))+
+geom_area(alpha=.5)+
+labs(title = 'Average Proportion of Rnenewable Energy between Low and High GDP Countries',
+y='Proportion of Rnenewable Energy',
+color='GDP Category')
+```
+
+This graph shows that renewable energy actually accounts for a greater proportion of the total energy in developing low-GDP countries than in wealthy high-GDP countries.
+Possible explanations for this outcome: 
+
+- Low-GDP countries have more access to new renewable technologies.
+- Low-GDP countries have a low amount of energy in the first place, so it is easier for the proportion of renewable energy to be higher. 
+- Development in these nations is occurring at the same time as these technological advancements, and thus, their energy system is built around renewable energy.
+- Intentional pushes to bring developing nations' renewable energy are successful. 
+ 
+
+&nbsp;
+
+## Proportion of Renewable Energy in the 20 Lowest GDP Countries and 20 Highest GDP Countries 
+#### This graph shows the proportion of total energy consumption that is renewable energy in the 20 lowest averge GDP cpuntries and the 20 highest average GDP counries.
+ 
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.keep = "none"}
+mr <-
+energy %>% 
+filter(Technology %in% c('Total renewable', 'Total non-renewable')) %>% 
+group_by(`Country/area`, Year) %>% 
+summarize(
+  renewables = sum(as.numeric(gwh[Technology == 'Total renewable']), na.rm=TRUE),
+  total = sum(as.numeric(gwh, na.rm=TRUE))) %>% 
+mutate(prop_renewable = renewables/total) %>% 
+mutate(gdp_cat = case_when(
+`Country/area` %in% low_gdp_countries ~ 'Poorest 20',
+`Country/area` %in% high_gdp_countries ~ 'Richest 20',
+`Country/area` == 'United States of America (the)' ~ 'Richest 20',
+.default = 'Other'
+)) %>% 
+filter( ! gdp_cat == 'Other')
+
+
+ggplot(mr, 
+aes(x=Year, 
+y=prop_renewable,
+group= `Country/area`,
+color=gdp_cat))+
+geom_path() +
+labs(title = 'Propotion of Renewable Energy Over Time',
+y='Proportion of Rnenewable Energy',
+color='GDP Category')
+```
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(plotly)
+ggplotly()
+
+```
+Yet, in this graph, we see that the progression of renewable energy is chaotic, unstable, and unpredictable in developing nations.  
+
+&nbsp;
+
+## Total Energy Consumption in the 20 Lowest GDP Countries and 20 Highest GDP Countries 
+#### This graph shows each countries total energy consumption (renewable and nonrenewable energies). 
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide", message=FALSE, fig.keep = "none"}
+total_e <- 
+energy %>% 
+filter(Technology %in% c('Total renewable', 'Total non-renewable')) %>% 
+group_by(`Country/area`, Year) %>% 
+summarize(total = sum(as.numeric(gwh, na.rm=TRUE))) %>% 
+mutate(gdp_cat = case_when(
+`Country/area` %in% low_gdp_countries ~ 'Poorest 20',
+`Country/area` %in% high_gdp_countries ~ 'Richest 20',
+`Country/area` == 'United States of America (the)' ~ 'Richest 20',
+.default = 'Other'
+)) %>% 
+filter( ! gdp_cat == 'Other')
+
+ggplot(total_e, 
+aes(x=Year, 
+y=total,
+group= `Country/area`,
+color=gdp_cat))+
+geom_path() +
+labs(title = 'Total gwh Consumption by the top 20 High and Low GDP Countries',
+y='gwh of enegery',
+color='GDP Category') 
+```
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(plotly)
+ggplotly()
+```
+## Total Amount of Renewable Energy produced by low-GDP countries vs High-Gdp Countries 
+#### This graph shows the total mount of renewable energy that the top 20 GDP Countries produced vs the bottom 20 GDP Countries. 
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide", message=FALSE}
+tote <-
+total_e %>% 
+group_by(gdp_cat, Year) %>% 
+summarize(avg_total = sum(total, na.rm=TRUE))
+
+ggplot(tote,
+aes(x=Year, 
+y = avg_total,
+color = gdp_cat))+
+geom_path()+
+labs(title = '....',
+y='...',
+color='...')+
+scale_y_continuous(trans='log')+
+labs(title = 'Total Amount of Renewable Energy in Low and High GDP Countries',
+y='gwh or renewable energy',
+color='GDP Category')
+```
+
+# Takeaways 
+I know this is supposed to be about the data, but to be completely honest, I have spent many, many hours on this assignment. My takeaway is that I think I have misunderstood or bitten off more than I can chew on this assignment haha.  
+
+```{r, eval=FALSE, echo=FALSE}
+renew_e<-
+energy %>% 
+filter(Technology %in% c('Total renewable')) %>% 
+group_by(`Country/area`, Year) %>% 
+summarize(renew = sum(as.numeric(gwh, na.rm=TRUE))) %>% 
+mutate(gdp_cat = case_when(
+`Country/area` %in% low_gdp_countries ~ 'Poorest 20',
+`Country/area` %in% high_gdp_countries ~ 'Richest 20',
+`Country/area` == 'United States of America (the)' ~ 'Richest 20',
+.default = 'Other'
+)) %>% 
+filter( ! gdp_cat == 'Other') 
+
+ggplot(renew_e,
+aes(x=Year, 
+y= renew,
+color=gdp_cat,
+fill=gdp_cat))+
+geom_area(alpha=.5)+
+labs(title = 'Average Proportion of Rnenewable Energy between Low and High GDP Countries',
+y='Proportion of Rnenewable Energy',
+color='GDP Category')
+```
+
+
+
+```{r, eval=FALSE, echo=FALSE}
+#stuff we did in class 
 library(ggplot2)
 ggplot(econ, 
        aes(x=year,
@@ -59,21 +342,15 @@ ggplot(econ,
            y=0.12,
            size=6,
            label = 'Range of fossil\n fuel costs')
-
 ```
 
-```{r}
+```{r, eval=FALSE, echo=FALSE}
+#stuff we did in class 
 library(knitr)
 econ %>% 
   filter(year==2020) %>% 
   group_by(source) %>% 
   summarize(cost=mean(cost,na.rm=TRUE)) %>% 
   kable
-
 ```
-
-
-
-
-
 
