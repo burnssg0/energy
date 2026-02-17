@@ -3,14 +3,12 @@ output: html_document
 editor_options: 
 chunk_output_type: console
 ---
----
-Title: "Data Story 1"
-Author: "Sarah Grace Burns"
-Date: "`r Sys.Date()`"
------
+
 &nbsp;
 
 # Effects of GDP on Access to Renewable Energy 
+### Sarah Grace Burns 
+#### 17 Feb. 2026
 
 &nbsp;
 
