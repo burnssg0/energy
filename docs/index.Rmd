@@ -168,7 +168,7 @@ filter( ! gdp_cat == 'Other')
 
 &nbsp;
 
-#Does the GDP of a country influence what percentage of its energy sources are renewable?
+# Does the GDP of a country influence what percentage of its energy sources are renewable?
 
 &nbsp;
 
