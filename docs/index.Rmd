@@ -195,13 +195,16 @@ color='GDP Category')
 This graph shows that renewable energy actually accounts for a greater proportion of the total energy in developing low-GDP countries than in wealthy high-GDP countries.
 Possible explanations for this outcome: 
 
-- Low-GDP countries have more access to new renewable technologies.
+- Low-GDP countries have more access to new renewable technologies. *(based on the dwonward slope, this is very unlikely)
 - Low-GDP countries have a low amount of energy in the first place, so it is easier for the proportion of renewable energy to be higher. 
 - Development in these nations is occurring at the same time as these technological advancements, and thus, their energy system is built around renewable energy.
 - Intentional pushes to bring developing nations' renewable energy are successful. 
  
+*The downward slope of the low GDP Country line could be due to trends where, as nations continue to develop, more energy overall is used, and as development happens, more and more energy becomes non-renewable. This trend goes againt sustainible developmnet goals.  
 
 &nbsp;
+
+
 
 ## Proportion of Renewable Energy in the 20 Lowest GDP Countries and 20 Highest GDP Countries 
 #### This graph shows the proportion of total energy consumption that is renewable energy in the 20 lowest averge GDP cpuntries and the 20 highest average GDP counries.
@@ -240,7 +243,7 @@ library(plotly)
 ggplotly()
 
 ```
-Yet, in this graph, we see that the progression of renewable energy is chaotic, unstable, and unpredictable in developing nations.  
+In this graph, we see a more telling trend that shows a discrepancy between low and high-income countries. This graph shows that the progression of renewable energy is chaotic, unstable, and unpredictable in developing nations. If you toggle one category of GDP at a time, you can see that high-GDP countries have a relatively consistent increase in renewable energy. On the other hand, low DGP counties' proportion of renewable energy **drasticaly change** over time. This shows the unpredictability and inconsistency in green energy in these low-income countries.   
 
 &nbsp;
 
@@ -275,6 +278,10 @@ color='GDP Category')
 library(plotly)
 ggplotly()
 ```
+While we determined [above](#proportion-of-renewable-energy-between-low-and-high-gdp-countries) that low GDP countries have a higher proportion of renewable energy, this graph shows that the overall energy use of low GDP countries is **drastically lower** than that of high GDP countries. This means that while low-DGP countries have a higher *proportion* of green energy, overall they have access to a fraction of renewable energy that high-GDP countries have access to. 
+
+&nbsp;
+
 ## Total Amount of Renewable Energy produced by low-GDP countries vs High-Gdp Countries 
 #### This graph shows the total mount of renewable energy that the top 20 GDP Countries produced vs the bottom 20 GDP Countries. 
 ```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide", message=FALSE}
@@ -297,8 +304,22 @@ y='gwh or renewable energy',
 color='GDP Category')
 ```
 
+This graph shows the large discrepancy between low and high-GDP countries. We can see in this graph how much work still needs to be done to reach our sustainable development goal. 
+
+&nbsp;
+
 # Takeaways 
-I know this is supposed to be about the data, but to be completely honest, I have spent many, many hours on this assignment. My takeaway is that I think I have misunderstood or bitten off more than I can chew on this assignment haha.  
+This data shows that promoting renewable energy in low-GDP countries is lacking in comparison to high-GDP countries. While the proportion of renewable energy is higher in low-GDP countries than in high-GDP countries, renewable energy resources are unpredictable and fluctuate massively in low GDP counries. Low-GDP countries display a very unstable development of renewable resources. Moreover, the total energy of these low-GDP countries is incredibly low in comparison to that of high-GDP countries. 
+
+Continuing forward to achieve the Sustainable Development Goals, we need to:
+  1. Continue to promote renewable energy in High GDP countties to increase the proportion of total energy that is renewable. 
+  2. Make renewable energy more prevalent in low-GDP countries to both maintain a high proportion of renewable energy and increase the total amount of energy available to these low income countrues. 
+
+&nbsp;
+
+*I am not particularly proud of this work. I spent a lot of time on this assignment. 
+I think I am struggling to understand these assignments and what you want from them. I am not sure if I should be investing and spending time on my R code, making really pretty graphs, or telling a good story. I don't feel like I can complete all three tasks with my current knowledge and time. I put a lot of effort into this assignmnet but I don't feel that it shows. Thank you in advance for understanding.* 
+   
 
 ```{r, eval=FALSE, echo=FALSE}
 renew_e<-
