@@ -16,11 +16,39 @@ chunk_output_type: console
 
 &nbsp;
 
+Most of us know that feeling when we wake up and realize our phone died overnight, and we forgot to plug it in. But beyond that moment, we don’t think much of the electricity we rely on. We flip on lights without thinking, pour a cold drink from the fridge, unwind in air conditioning after a long day, and walk home beneath the streetlights late at night without a second thought. For many people, though, like the boy in this picture, those everyday comforts are not routine at all. They have grown up without reliable electricity and without the opportunities, safety, and ease it quietly provides.
+
+Access to electricity provides many benefits that are crucial for developing countries to grow and advance. Electricity is a form of healthcare, keeping food refrigerated and safe, making healthy food more available, refrigerating vaccines and other medicines, and providing necessary light and technologies for life-saving operations and procedures. Electricity improves safety by lighting up streets and houses. It improves education by making it possible to study after dark, opens access to global knowledge and communication through the internet, and creates learning environments where students can reliably engage with modern tools and resources. Clean green energy, in particular, can replace other forms of polluting energy, improving air quality on a local and global scale. Clean energy can also provide energy to homes without being reliant on a centralized grid or infrastructure that is often lacking in developing countries. 
+
+Today, developed high-GDP countries are beginning to make the transition to clean energy.
+While this transition is vital, many developing countries lack access to reliable energy as a whole. Expanding access to clean energy in low-GDP countries presents a **rare dual opportunity**: to accelerate the global move toward sustainability while also providing a critical foundation for socioeconomic development, economic growth, and improved quality of life. 
+
+Focusing on improving access to clean energy in developing nations relates to multiple Sustainable Development goals. 
+
+
 ### Sustainable Development 
-Sustainable development has three major aspects: **economic development**, **broad-based social inclusion**, and **environmental sustainability**. Within these broad aspects, sustainible developmnet goal number 7 is to "ensure access to affordable, sustainable modern energy." With this and the broad aspects of sustainable development in mind, countries with a low GDP *should* be experiencing the transition to new forms of renewable, clean energy at the same rates as countries with high GDPs.  
+Sustainable Development **goal number 7 is to "ensure access to affordable, sustainable modern energy."** 
+
+In the context of this goal, we should focus our efforts on helping low-GDP countries gain access to energy.   
+
+This project also relates to: 
+
+
+- #3: Good Health and Well-being
+
+- #4: Quality Education
+
+- #9: Industry, Innovation and Infrastructure
+
+- #10: Reduced Inequalities
+
+- #11: Sustainable Cities and Communities
+
+- #12: Responsible Consumption and Production
+ 
  
 ### Introduction of Datasets 
-We will use four datasets
+We will use four data sets
 
 1. Gapminder from *Gapminder* 
 2. A Carbon Emission Dataset from *The Global Carbon Project* 
@@ -166,6 +194,42 @@ filter( ! gdp_cat == 'Other')
 
 &nbsp;
 
+Before we determine the use of clean energy, let's first look at the amount of energy overall that is used by low vs high GDP countries. 
+
+## Total Energy Consumption in the 20 Lowest GDP Countries and 20 Highest GDP Countries 
+#### This graph shows each countries total energy consumption (renewable and nonrenewable energies). 
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide", message=FALSE, fig.keep = "none"}
+total_e <- 
+energy %>% 
+filter(Technology %in% c('Total renewable', 'Total non-renewable')) %>% 
+group_by(`Country/area`, Year) %>% 
+summarize(total = sum(as.numeric(gwh, na.rm=TRUE))) %>% 
+mutate(gdp_cat = case_when(
+`Country/area` %in% low_gdp_countries ~ 'Poorest 20',
+`Country/area` %in% high_gdp_countries ~ 'Richest 20',
+`Country/area` == 'United States of America (the)' ~ 'Richest 20',
+.default = 'Other'
+)) %>% 
+filter( ! gdp_cat == 'Other')
+
+ggplot(total_e, 
+aes(x=Year, 
+y=total,
+group= `Country/area`,
+color=gdp_cat))+
+geom_path() +
+labs(title = 'Total gwh Consumption by the top 20 High and Low GDP Countries',
+y='gwh of enegery',
+color='GDP Category') 
+```
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(plotly)
+ggplotly()
+```
+
+As we can see, High-GDP countries are using significantly more energy than low-GDP countries. Here we can already see a discrepancy between energy accessibility.  
+
 # Does the GDP of a country influence what percentage of its energy sources are renewable?
 
 &nbsp;
@@ -201,82 +265,6 @@ Possible explanations for this outcome:
 *The downward slope of the low GDP Country line could be due to trends where, as nations continue to develop, more energy overall is used, and as development happens, more and more energy becomes non-renewable. This trend goes againt sustainible developmnet goals.  
 
 &nbsp;
-
-
-
-## Proportion of Renewable Energy in the 20 Lowest GDP Countries and 20 Highest GDP Countries 
-#### This graph shows the proportion of total energy consumption that is renewable energy in the 20 lowest averge GDP cpuntries and the 20 highest average GDP counries.
- 
-```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.keep = "none"}
-mr <-
-energy %>% 
-filter(Technology %in% c('Total renewable', 'Total non-renewable')) %>% 
-group_by(`Country/area`, Year) %>% 
-summarize(
-  renewables = sum(as.numeric(gwh[Technology == 'Total renewable']), na.rm=TRUE),
-  total = sum(as.numeric(gwh, na.rm=TRUE))) %>% 
-mutate(prop_renewable = renewables/total) %>% 
-mutate(gdp_cat = case_when(
-`Country/area` %in% low_gdp_countries ~ 'Poorest 20',
-`Country/area` %in% high_gdp_countries ~ 'Richest 20',
-`Country/area` == 'United States of America (the)' ~ 'Richest 20',
-.default = 'Other'
-)) %>% 
-filter( ! gdp_cat == 'Other')
-
-
-ggplot(mr, 
-aes(x=Year, 
-y=prop_renewable,
-group= `Country/area`,
-color=gdp_cat))+
-geom_path() +
-labs(title = 'Propotion of Renewable Energy Over Time',
-y='Proportion of Rnenewable Energy',
-color='GDP Category')
-```
-
-```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
-library(plotly)
-ggplotly()
-
-```
-In this graph, we see a more telling trend that shows a discrepancy between low and high-income countries. This graph shows that the progression of renewable energy is chaotic, unstable, and unpredictable in developing nations. If you toggle one category of GDP at a time, you can see that high-GDP countries have a relatively consistent increase in renewable energy. On the other hand, low DGP counties' proportion of renewable energy **drasticaly change** over time. This shows the unpredictability and inconsistency in green energy in these low-income countries.   
-
-&nbsp;
-
-## Total Energy Consumption in the 20 Lowest GDP Countries and 20 Highest GDP Countries 
-#### This graph shows each countries total energy consumption (renewable and nonrenewable energies). 
-```{r, eval=TRUE, echo=FALSE, warning=FALSE, results="hide", message=FALSE, fig.keep = "none"}
-total_e <- 
-energy %>% 
-filter(Technology %in% c('Total renewable', 'Total non-renewable')) %>% 
-group_by(`Country/area`, Year) %>% 
-summarize(total = sum(as.numeric(gwh, na.rm=TRUE))) %>% 
-mutate(gdp_cat = case_when(
-`Country/area` %in% low_gdp_countries ~ 'Poorest 20',
-`Country/area` %in% high_gdp_countries ~ 'Richest 20',
-`Country/area` == 'United States of America (the)' ~ 'Richest 20',
-.default = 'Other'
-)) %>% 
-filter( ! gdp_cat == 'Other')
-
-ggplot(total_e, 
-aes(x=Year, 
-y=total,
-group= `Country/area`,
-color=gdp_cat))+
-geom_path() +
-labs(title = 'Total gwh Consumption by the top 20 High and Low GDP Countries',
-y='gwh of enegery',
-color='GDP Category') 
-```
-
-```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
-library(plotly)
-ggplotly()
-```
-While we determined [above](#proportion-of-renewable-energy-between-low-and-high-gdp-countries) that low GDP countries have a higher proportion of renewable energy, this graph shows that the overall energy use of low GDP countries is **drastically lower** than that of high GDP countries. This means that while low-DGP countries have a higher *proportion* of green energy, overall they have access to a fraction of renewable energy that high-GDP countries have access to. 
 
 &nbsp;
 
@@ -314,10 +302,6 @@ Continuing forward to achieve the Sustainable Development Goals, we need to:
   2. Make renewable energy more prevalent in low-GDP countries to both maintain a high proportion of renewable energy and increase the total amount of energy available to these low income countrues. 
 
 &nbsp;
-
-*I am not particularly proud of this work. I spent a lot of time on this assignment. 
-I think I am struggling to understand these assignments and what you want from them. I am not sure if I should be investing and spending time on my R code, making really pretty graphs, or telling a good story. I don't feel like I can complete all three tasks with my current knowledge and time. I put a lot of effort into this assignmnet but I don't feel that it shows. Thank you in advance for understanding.* 
-   
 
 ```{r, eval=FALSE, echo=FALSE}
 renew_e<-
